@@ -2,6 +2,33 @@
 
 const API_BASE_URL = '';
 
+// Theme Management
+function initTheme() {
+    const saved = localStorage.getItem("theme");
+    const system = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    const theme = saved || system || "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    updateThemeIcon(theme);
+}
+
+function updateThemeIcon(theme) {
+    const toggleBtn = document.getElementById("theme-toggle");
+    if (toggleBtn) {
+        toggleBtn.textContent = theme === "dark" ? "🌙" : "☀️";
+    }
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+    updateThemeIcon(next);
+}
+
+// Initialize theme as early as possible
+initTheme();
+
 // DOM Elements
 const createTaskForm = document.getElementById('create-task-form');
 const tasksList = document.getElementById('tasks-list');
@@ -318,6 +345,12 @@ refreshBtn.addEventListener('click', async () => {
 clearConsoleBtn.addEventListener('click', () => {
     apiConsole.innerHTML = '<div class="console-line system">Консоль очищена</div>';
 });
+
+// Theme toggle button event listener
+const themeToggleBtn = document.getElementById('theme-toggle');
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+}
 
 // Helper: Get current status for a task (for revert on error)
 function getStatusFromTaskId(taskId) {

@@ -1,4 +1,4 @@
-```
+```gitignore
 # Dependencies
 node_modules/
 
@@ -9,10 +9,6 @@ build/
 *.min.css
 *.bundle.js
 
-# Logs and temp files
-*.log
-*.tmp
-
 # Environment
 .env
 .env.local
@@ -21,6 +17,28 @@ build/
 # Editors
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Python (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+htmlcov/
+.coverage.*
+.python-version
+
+# Coverage
+coverage/
+htmlcov/
 
 # OS generated files
 .DS_Store

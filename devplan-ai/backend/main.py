@@ -29,12 +29,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static files
-app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
-
-# Include routers
+# Include routers first
 app.include_router(tasks.router)
 app.include_router(agent_tools.router)
+
+# Mount static files AFTER routers to ensure proper precedence
+app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
 
 @app.get("/")

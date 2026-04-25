@@ -15,14 +15,18 @@
     --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.2);
     --console-bg: #1f2937;
     --glass-bg: rgba(26, 29, 39, 0.7);
+    --console-system: #9ca3af;
+    --console-request: #60a5fa;
     
     /* Status colors */
     --primary-color: #4a6cf7;
     --primary-hover: #3d5ae8;
     --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
+    --danger-hover: #dc2626;
     
     /* Badge colors - dot style */
     --badge-low-bg: rgba(59, 130, 246, 0.15);
@@ -52,16 +56,20 @@
     --border: #e2e6f0;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-soft: 0 1px 4px rgba(0, 0, 0, 0.05);
-    --console-bg: #1f2937;
+    --console-bg: #f0f2f8;
     --glass-bg: rgba(255, 255, 255, 0.7);
+    --console-system: #6b7280;
+    --console-request: #4a6cf7;
     
     /* Status colors */
     --primary-color: #4a6cf7;
     --primary-hover: #3d5ae8;
     --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
+    --danger-hover: #dc2626;
     
     /* Badge colors - dot style */
     --badge-low-bg: rgba(59, 130, 246, 0.1);
@@ -191,12 +199,20 @@ h2 {
     box-shadow: 0 8px 25px rgba(74, 108, 247, 0.3);
 }
 
+[data-theme="light"] .stat-card:hover {
+    box-shadow: 0 8px 25px rgba(74, 108, 247, 0.25);
+}
+
 .stat-card.overdue {
-    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+    background: linear-gradient(135deg, var(--danger-color), var(--danger-hover));
 }
 
 .stat-card.overdue:hover {
     box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="light"] .stat-card.overdue:hover {
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.25);
 }
 
 /* Bento Grid variation for larger screens */
@@ -266,6 +282,12 @@ input:focus, textarea:focus, select:focus {
     box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
 }
 
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus {
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+}
+
 textarea {
     resize: vertical;
     font-family: inherit;
@@ -296,13 +318,17 @@ textarea {
     box-shadow: 0 4px 15px rgba(74, 108, 247, 0.35);
 }
 
+[data-theme="light"] .btn-primary:hover {
+    box-shadow: 0 4px 15px rgba(74, 108, 247, 0.25);
+}
+
 .btn-secondary {
     background-color: var(--secondary-color);
     color: white;
 }
 
 .btn-secondary:hover {
-    background-color: #4b5563;
+    background-color: var(--secondary-hover);
     transform: translateY(-2px);
 }
 
@@ -319,6 +345,10 @@ textarea {
 .btn-danger:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+}
+
+[data-theme="light"] .btn-danger:hover {
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);
 }
 
 .btn-small {
@@ -484,7 +514,7 @@ textarea {
 /* Console */
 .console {
     background: var(--console-bg);
-    color: #10b981;
+    color: var(--success-color);
     font-family: 'Courier New', monospace;
     padding: 16px;
     border-radius: 12px;
@@ -505,19 +535,19 @@ textarea {
 }
 
 .console-line.system {
-    color: #9ca3af;
+    color: var(--console-system);
 }
 
 .console-line.request {
-    color: #60a5fa;
+    color: var(--console-request);
 }
 
 .console-line.response {
-    color: #10b981;
+    color: var(--success-color);
 }
 
 .console-line.error {
-    color: #ef4444;
+    color: var(--danger-color);
 }
 
 /* Footer */

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevPlan AI — Планировщик задач</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 DevPlan AI</h1>
+            <p class="subtitle">Умный планировщик задач для тестирования AI-агентов</p>
+        </header>
+
+        <main>
+            <!-- Statistics Widget -->
+            <section class="stats-section">
+                <h2>📊 Статистика</h2>
+                <div id="stats" class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-total">0</span>
+                        <span class="stat-label">Всего задач</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-todo">0</span>
+                        <span class="stat-label">К выполнению</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-in-progress">0</span>
+                        <span class="stat-label">В работе</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-done">0</span>
+                        <span class="stat-label">Готово</span>
+                    </div>
+                    <div class="stat-card overdue">
+                        <span class="stat-value" id="stat-overdue">0</span>
+                        <span class="stat-label">Просрочено</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create Task Form -->
+            <section class="form-section">
+                <h2>➕ Создать задачу</h2>
+                <form id="create-task-form" class="task-form">
+                    <div class="form-group">
+                        <label for="title">Название *</label>
+                        <input type="text" id="title" name="title" required placeholder="Введите название задачи">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="description">Описание</label>
+                        <textarea id="description" name="description" rows="3" placeholder="Описание задачи (опционально)"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="priority">Приоритет</label>
+                            <select id="priority" name="priority">
+                                <option value="low">Низкий</option>
+                                <option value="medium" selected>Средний</option>
+                                <option value="high">Высокий</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="deadline">Срок выполнения</label>
+                            <input type="date" id="deadline" name="deadline">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Создать задачу</button>
+                </form>
+            </section>
+
+            <!-- Tasks List -->
+            <section class="tasks-section">
+                <div class="tasks-header">
+                    <h2>📋 Список задач</h2>
+                    <div class="filters">
+                        <select id="filter-status">
+                            <option value="">Все статусы</option>
+                            <option value="todo">К выполнению</option>
+                            <option value="in_progress">В работе</option>
+                            <option value="done">Готово</option>
+                        </select>
+                        <select id="filter-priority">
+                            <option value="">Все приоритеты</option>
+                            <option value="low">Низкий</option>
+                            <option value="medium">Средний</option>
+                            <option value="high">Высокий</option>
+                        </select>
+                        <button id="refresh-btn" class="btn btn-secondary">🔄 Обновить</button>
+                    </div>
+                </div>
+                <div id="tasks-list" class="tasks-grid">
+                    <!-- Tasks will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Agent Console -->
+            <section class="console-section">
+                <h2>🤖 Консоль API-вызовов</h2>
+                <div id="api-console" class="console">
+                    <div class="console-line system">Консоль готова к работе...</div>
+                </div>
+                <button id="clear-console" class="btn btn-secondary">Очистить консоль</button>
+            </section>
+        </main>
+
+        <footer>
+            <p>DevPlan AI v1.0 | Backend: FastAPI + SQLite | Frontend: Vanilla JS</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

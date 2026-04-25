@@ -42,6 +42,13 @@
     --badge-in-progress-dot: #3b82f6;
     --badge-done-bg: rgba(16, 185, 129, 0.15);
     --badge-done-dot: #10b981;
+    
+    /* Notification colors */
+    --notification-bg: rgba(26, 29, 39, 0.95);
+    --notification-success: #10b981;
+    --notification-error: #ef4444;
+    --notification-warning: #f59e0b;
+    --notification-info: #4a6cf7;
 }
 
 /* Light Theme */
@@ -86,6 +93,13 @@
     --badge-in-progress-dot: #3b82f6;
     --badge-done-bg: rgba(16, 185, 129, 0.1);
     --badge-done-dot: #10b981;
+    
+    /* Notification colors */
+    --notification-bg: rgba(255, 255, 255, 0.95);
+    --notification-success: #10b981;
+    --notification-error: #ef4444;
+    --notification-warning: #f59e0b;
+    --notification-info: #4a6cf7;
 }
 
 * {
@@ -674,4 +688,203 @@ footer {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
+}
+
+/* Notifications (Toast) */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+}
+
+.notification {
+    background: var(--notification-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-left: 4px solid;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInRight 0.3s ease forwards;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.notification.success {
+    border-left-color: var(--notification-success);
+}
+
+.notification.error {
+    border-left-color: var(--notification-error);
+}
+
+.notification.warning {
+    border-left-color: var(--notification-warning);
+}
+
+.notification.info {
+    border-left-color: var(--notification-info);
+}
+
+.notification-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.notification-content {
+    flex: 1;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.25rem;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.notification-close:hover {
+    color: var(--text-primary);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.notification.hiding {
+    animation: slideOutRight 0.3s ease forwards;
+}
+
+/* Drag and Drop Styles */
+.task-card.dragging {
+    opacity: 0.5;
+    transform: scale(1.02);
+    cursor: grabbing;
+}
+
+.task-card.drag-over {
+    border: 2px dashed var(--accent);
+    background: var(--bg-hover);
+}
+
+.tasks-grid.kanban-mode {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.kanban-column {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 16px;
+    min-height: 400px;
+}
+
+.kanban-column-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+}
+
+.kanban-column-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kanban-count {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.kanban-column.todo .kanban-column-header {
+    border-bottom-color: var(--badge-todo-dot);
+}
+
+.kanban-column.in_progress .kanban-column-header {
+    border-bottom-color: var(--badge-in-progress-dot);
+}
+
+.kanban-column.done .kanban-column-header {
+    border-bottom-color: var(--badge-done-dot);
+}
+
+.kanban-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100px;
+}
+
+/* View Toggle Buttons */
+.view-toggle {
+    display: flex;
+    gap: 8px;
+    background: var(--bg-primary);
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.view-toggle button {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.view-toggle button.active {
+    background: var(--accent);
+    color: white;
+}
+
+.view-toggle button:hover:not(.active) {
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }

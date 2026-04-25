@@ -2,6 +2,46 @@
 
 const API_BASE_URL = '';
 
+// Notification System
+function showNotification(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
+    const icons = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    };
+
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <span class="notification-icon">${icons[type]}</span>
+        <span class="notification-content">${escapeHtml(message)}</span>
+        <button class="notification-close">×</button>
+    `;
+
+    container.appendChild(notification);
+
+    // Auto-remove after duration
+    const timeoutId = setTimeout(() => removeNotification(notification), duration);
+
+    // Close button
+    const closeBtn = notification.querySelector('.notification-close');
+    closeBtn.addEventListener('click', () => {
+        clearTimeout(timeoutId);
+        removeNotification(notification);
+    });
+}
+
+function removeNotification(notification) {
+    notification.classList.add('hiding');
+    notification.addEventListener('animationend', () => {
+        notification.remove();
+    });
+}
+
 // Theme Management
 function initTheme() {
     const saved = localStorage.getItem("theme");
@@ -37,6 +77,8 @@ const filterPriority = document.getElementById('filter-priority');
 const refreshBtn = document.getElementById('refresh-btn');
 const apiConsole = document.getElementById('api-console');
 const clearConsoleBtn = document.getElementById('clear-console');
+const viewListBtn = document.getElementById('view-list');
+const viewKanbanBtn = document.getElementById('view-kanban');
 
 // Stats elements
 const statTotal = document.getElementById('stat-total');
@@ -192,6 +234,7 @@ function renderTaskCard(task) {
     card.className = 'task-card';
     card.dataset.id = task.id;
     card.setAttribute('data-priority', task.priority);
+    card.setAttribute('draggable', 'true');
     
     card.innerHTML = `
         <div class="task-info">
@@ -216,6 +259,13 @@ function renderTaskCard(task) {
             </button>
         </div>
     `;
+    
+    // Drag and Drop events
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragend', handleDragEnd);
+    card.addEventListener('dragover', handleDragOver);
+    card.addEventListener('drop', handleDrop);
+    card.addEventListener('dragleave', handleDragLeave);
     
     return card;
 }
@@ -296,6 +346,7 @@ createTaskForm.addEventListener('submit', async (e) => {
     
     try {
         await createTask(taskData);
+        showNotification('Задача успешно создана!', 'success');
         createTaskForm.reset();
         await renderTasks();
         await renderStats();
@@ -311,10 +362,12 @@ tasksList.addEventListener('change', async (e) => {
         
         try {
             await updateTaskStatus(taskId, newStatus);
+            showNotification(`Статус задачи обновлён на "${getStatusLabel(newStatus)}"`, 'success');
             await renderTasks();
             await renderStats();
         } catch (error) {
             e.target.value = getStatusFromTaskId(taskId); // Revert on error
+            showNotification('Ошибка обновления статуса', 'error');
         }
     }
 });
@@ -327,6 +380,7 @@ tasksList.addEventListener('click', async (e) => {
         if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
             try {
                 await deleteTask(taskId);
+                showNotification('Задача удалена', 'success');
                 await renderTasks();
                 await renderStats();
             } catch (error) {
@@ -341,7 +395,16 @@ filterPriority.addEventListener('change', renderTasks);
 refreshBtn.addEventListener('click', async () => {
     await renderTasks();
     await renderStats();
+    showNotification('Список задач обновлён', 'info');
 });
+
+// View toggle buttons
+if (viewListBtn) {
+    viewListBtn.addEventListener('click', () => toggleView('list'));
+}
+if (viewKanbanBtn) {
+    viewKanbanBtn.addEventListener('click', () => toggleView('kanban'));
+}
 
 clearConsoleBtn.addEventListener('click', () => {
     apiConsole.innerHTML = '<div class="console-line system">Консоль очищена</div>';
@@ -357,6 +420,138 @@ if (themeToggleBtn) {
 function getStatusFromTaskId(taskId) {
     const select = document.querySelector(`.status-select[data-task-id="${taskId}"]`);
     return select ? select.value : 'todo';
+}
+
+// Drag and Drop functionality
+let draggedTaskId = null;
+
+function handleDragStart(e) {
+    draggedTaskId = parseInt(this.dataset.id);
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', draggedTaskId);
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    document.querySelectorAll('.task-card').forEach(card => {
+        card.classList.remove('drag-over');
+    });
+    draggedTaskId = null;
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (this !== event.target.closest('.dragging')) {
+        this.classList.add('drag-over');
+    }
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+async function handleDrop(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    
+    const targetCard = this.closest('.task-card');
+    if (!targetCard || !draggedTaskId) return;
+    
+    const targetTaskId = parseInt(targetCard.dataset.id);
+    if (draggedTaskId === targetTaskId) return;
+    
+    // Update the dropped task's status to match the target's status
+    const targetSelect = targetCard.querySelector('.status-select');
+    if (targetSelect) {
+        const newStatus = targetSelect.value;
+        try {
+            await updateTaskStatus(draggedTaskId, newStatus);
+            showNotification(`Статус задачи обновлён на "${getStatusLabel(newStatus)}"`, 'success');
+            await renderTasks();
+            await renderStats();
+        } catch (error) {
+            showNotification('Ошибка обновления статуса', 'error');
+        }
+    }
+}
+
+// Kanban View functionality
+let isKanbanMode = false;
+
+function toggleView(mode) {
+    isKanbanMode = mode === 'kanban';
+    
+    if (viewListBtn) viewListBtn.classList.toggle('active', !isKanbanMode);
+    if (viewKanbanBtn) viewKanbanBtn.classList.toggle('active', isKanbanMode);
+    
+    tasksList.classList.toggle('kanban-mode', isKanbanMode);
+    
+    if (isKanbanMode) {
+        renderKanbanView();
+    } else {
+        renderTasks();
+    }
+}
+
+async function renderKanbanView() {
+    tasksList.innerHTML = '';
+    
+    const columns = [
+        { id: 'todo', title: 'К выполнению', icon: '📋' },
+        { id: 'in_progress', title: 'В работе', icon: '⚙️' },
+        { id: 'done', title: 'Готово', icon: '✅' }
+    ];
+    
+    const allTasks = await getTasks();
+    
+    columns.forEach(column => {
+        const columnEl = document.createElement('div');
+        columnEl.className = `kanban-column ${column.id}`;
+        
+        const columnTasks = allTasks.filter(t => t.status === column.id);
+        
+        columnEl.innerHTML = `
+            <div class="kanban-column-header">
+                <h3>${column.icon} ${column.title}</h3>
+                <span class="kanban-count">${columnTasks.length}</span>
+            </div>
+            <div class="kanban-list" data-status="${column.id}"></div>
+        `;
+        
+        const kanbanList = columnEl.querySelector('.kanban-list');
+        columnTasks.forEach(task => {
+            kanbanList.appendChild(renderTaskCard(task));
+        });
+        
+        // Allow dropping on the entire column
+        kanbanList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            kanbanList.classList.add('drag-over');
+        });
+        kanbanList.addEventListener('dragleave', () => {
+            kanbanList.classList.remove('drag-over');
+        });
+        kanbanList.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            kanbanList.classList.remove('drag-over');
+            
+            if (!draggedTaskId) return;
+            
+            const newStatus = kanbanList.dataset.status;
+            try {
+                await updateTaskStatus(draggedTaskId, newStatus);
+                showNotification(`Задача перемещена в "${column.title}"`, 'success');
+                renderKanbanView();
+                await renderStats();
+            } catch (error) {
+                showNotification('Ошибка перемещения задачи', 'error');
+            }
+        });
+        
+        tasksList.appendChild(columnEl);
+    });
 }
 
 // Initialize

@@ -1,6 +1,6 @@
 // DevPlan AI - Frontend Application Logic
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 
 // DOM Elements
 const createTaskForm = document.getElementById('create-task-form');

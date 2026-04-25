@@ -191,6 +191,7 @@ function renderTaskCard(task) {
     const card = document.createElement('div');
     card.className = 'task-card';
     card.dataset.id = task.id;
+    card.setAttribute('data-priority', task.priority);
     
     card.innerHTML = `
         <div class="task-info">
